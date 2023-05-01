@@ -14,5 +14,6 @@ This site was created to demonstrate the knowledge and skills to create a E-Comm
 
 6. Built a responsive and user-friendly interface using Bootstrap and Razor Views.
 
+7. Connected Microsoft SQL database to hold user data and orders.
 
 Current functionality allows a user to register, log in, add/remove items from a cart, show current items and total, create an order, and purchase an order. In order to demonstrate the functionality in a quick way, validation on entered data is minimal (valid credit card, email address, etc... not needed to test functionality).

@@ -1,0 +1,19 @@
+﻿@model ShopFast.Models.Order
+@{
+    ViewData["Title"] = "Order Confirmation";
+}
+
+<h2>Order Confirmation</h2>
+
+<p>Thank you, @Model.Name! Your order has been placed successfully.</p>
+
+<p>Order ID: @Model.Id</p>
+<p>Date: @Model.OrderDate.ToShortDateString()</p>
+<p>Shipping Address:</p>
+<address>
+    @Model.StreetAddress<br />
+    @Model.City, @Model.State @Model.Zip
+</address>
+<p>Fake Credit Card Number: @Model.FakeCreditCardNumber</p>
+
+<a asp-controller="Home" asp-action="Index" class="btn btn-primary">Continue Shopping</a>

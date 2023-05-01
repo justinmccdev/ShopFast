@@ -1,0 +1,32 @@
+﻿@model ShopFast.ViewModels.HomePageViewModel
+@{
+    ViewData["Title"] = "Home";
+    Layout = "~/Views/Shared/_Layout.cshtml";
+}
+
+@{
+    bool showProductGrid = ViewData["ShowProductGrid"] != null && (bool)ViewData["ShowProductGrid"];
+}
+
+@if (showProductGrid)
+{
+    <div class="row">
+        @foreach (var product in Model.FeaturedProducts)
+        {
+            <div class="col-md-3 col-sm-6">
+                <div class="card">
+                    <img class="card-img-top" src="@Url.Content($"~/{product.ImageUrl}")" alt="@product.Name">
+
+                    <div class="card-body">
+                        <h5 class="card-title">@product.Name</h5>
+                        <p class="card-text">Price: @product.Price</p>
+                        <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                            <input type="hidden" asp-for="@product.Id" name="productId" />
+                            <button type="submit" class="btn btn-primary">Add to Cart</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+}

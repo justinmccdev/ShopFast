@@ -1,0 +1,48 @@
+﻿@model ShopFast.Models.ShoppingCart
+@{
+    ViewData["Title"] = "My Cart";
+}
+
+<h1>My Cart</h1>
+
+@if (Model?.CartItems?.Count > 0)
+{
+        <table class="table">
+        <thead>
+            <tr>
+                <th>Product</th>
+                <th>Price</th>
+                <th>Quantity</th>
+                <th>Total</th>
+                <th></th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var item in Model.CartItems)
+            {
+                <tr>
+                    <td>@item.Product.Name</td>
+                    <td>@item.Product.Price.ToString("C")</td>
+                    <td>@item.Quantity</td>
+                    <td>@(item.Product.Price * item.Quantity).ToString("C")</td>
+                    <td>
+                            <form asp-controller="Cart" asp-action="RemoveFromCart" method="post">
+                                <input type="hidden" name="cartItemId" value="@item.Id" />
+                                <button type="submit" class="btn btn-danger">Remove</button>
+                                </form>
+                            </td>
+                        </tr>
+            }
+            </tbody>
+        </table>
+        <form asp-controller="Cart" asp-action="ClearCart" method="post">
+            <button type="submit" class="btn btn-danger">Clear Cart</button>
+        </form>
+    <h2>Total: $@ViewData["Total"]</h2>
+
+    <a class="btn btn-primary" href="@Url.Action("Checkout", "Cart")">Proceed to Checkout</a>
+}
+else
+{
+        <p>Your cart is empty.</p>
+}

@@ -20,9 +20,18 @@ namespace ShopFast.Controllers
             _context = context;
         }
 
-        public IActionResult Index()
+        public IActionResult Index(string query)
         {
-            var featuredProducts = _context.Products
+            var products = _context.Products.AsQueryable();
+
+            if (!string.IsNullOrEmpty(query))
+            {
+                //products = products.Where(p => p.Name.Contains(query));
+                products = products.Where(p => EF.Functions.Like(p.Name, $"%{query}%"));
+
+            }
+
+            var featuredProducts = products
                                     .OrderBy(p => p.Name)
                                     .Take(10)
                                     .ToList();

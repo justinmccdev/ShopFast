@@ -28,6 +28,12 @@ namespace ShopFast.Controllers
         public async Task<IActionResult> Index()
         {
             var userId = _userManager.GetUserId(User);
+
+            if (userId == null)
+            {
+                TempData["ErrorMessage"] = "Please log in order to check your cart.";
+                return RedirectToAction(nameof(Index), "Home"); // Redirect to the homepage
+            }
             var cart = await _cartService.GetCartAsync(userId);
             var total = await _cartService.GetTotalAsync(cart);
 

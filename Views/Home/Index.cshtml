@@ -8,6 +8,18 @@
     bool showProductGrid = ViewData["ShowProductGrid"] != null && (bool)ViewData["ShowProductGrid"];
 }
 
+@{
+    var errorMessage = TempData["ErrorMessage"] as string;
+}
+
+@if (!string.IsNullOrEmpty(errorMessage))
+{
+    <div class="alert alert-danger">
+        @errorMessage
+    </div>
+}
+
+
 @if (showProductGrid)
 {
     <div class="row">

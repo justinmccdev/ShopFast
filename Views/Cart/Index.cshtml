@@ -24,7 +24,7 @@
                     <td>@item.Product.Name</td>
                     <td>@item.Product.Price.ToString("C")</td>
                     <td>@item.Quantity</td>
-                    <td>@(item.Product.Price * item.Quantity).ToString("C")</td>
+                    <td>@(item.Product.Price * item.Quantity)</td>
                     <td>
                             <form asp-controller="Cart" asp-action="RemoveFromCart" method="post">
                                 <input type="hidden" name="cartItemId" value="@item.Id" />

@@ -16,6 +16,21 @@ namespace ShopFast.Data.Seed
                 serviceProvider.GetRequiredService<
                     DbContextOptions<ApplicationDbContext>>()))
             {
+                /* Guest Cart Now Seeded in Program.cs  
+                 * Leaving this code for review and as example to alternative seeding
+                // Logic to seed a guest shopping cart
+                if (!context.ShoppingCarts.Any(c => c.UserId == "e392ab50-2933-4cb8-b96f-2a8441b59e1a"))
+                {
+                    var guestCart = new ShoppingCart
+                    {
+                        UserId = "e392ab50-2933-4cb8-b96f-2a8441b59e1a",
+                        Status = "Active"
+                    };
+
+                    context.ShoppingCarts.Add(guestCart);
+                    await context.SaveChangesAsync();
+                }*/
+
                 // Check if any categories already exist.
                 if (context.Categories.Any())
                 {

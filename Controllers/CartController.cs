@@ -31,7 +31,7 @@ namespace ShopFast.Controllers
 
             if (userId == null)
             {
-                TempData["ErrorMessage"] = "Please log in order to check your cart.";
+                TempData["ErrorMessage"] = "Please login in order to check your cart.";
                 return RedirectToAction(nameof(Index), "Home"); // Redirect to the homepage
             }
             var cart = await _cartService.GetCartAsync(userId);

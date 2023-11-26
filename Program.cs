@@ -5,7 +5,7 @@ using Microsoft.Extensions.DependencyInjection;
 using ShopFast.Models;
 using ShopFast.Data;
 using ShopFast.Services;
-
+using ShopFast.Middleware;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -25,6 +25,8 @@ builder.Services.AddDefaultIdentity<IdentityUser>(options =>
 })
     .AddRoles<IdentityRole>()
     .AddEntityFrameworkStores<ApplicationDbContext>();
+
+
 
 builder.Services.AddScoped<ICartService, CartService>();
 builder.Services.AddControllersWithViews();
@@ -49,6 +51,10 @@ app.UseStaticFiles();
 app.UseRouting();
 
 app.UseAuthentication();
+
+
+app.UseMiddleware<GuestLoginMiddleware>();
+
 app.UseAuthorization();
 
 app.MapControllerRoute(
@@ -72,12 +78,38 @@ async Task SeedRoles(IServiceProvider serviceProvider)
     }
 }
 
+async Task SeedGuestUser(IServiceProvider serviceProvider)
+{
+    var userManager = serviceProvider.GetRequiredService<UserManager<IdentityUser>>();
+    var roleManager = serviceProvider.GetRequiredService<RoleManager<IdentityRole>>();
+
+    // Create guest user
+    var guestUser = new IdentityUser
+    {
+        Id = "e392ab50-2933-4cb8-b96f-2a8441b59e1a",
+        UserName = "Guest",
+        Email = "Guest@example.com",
+    };
+
+    var userExists = await userManager.FindByNameAsync(guestUser.UserName);
+    if (userExists == null)
+    {
+        var createUserResult = await userManager.CreateAsync(guestUser, "GuestPassword123!"); // Use a strong password
+        if (createUserResult.Succeeded)
+        {
+            // Assign Guest role to the user
+            await userManager.AddToRoleAsync(guestUser, "Guest");
+        }
+    }
+}
+
 using (var scope = app.Services.CreateScope())
 {
     var services = scope.ServiceProvider;
     try
     {
         await SeedRoles(services);
+        await SeedGuestUser(services);
     }
     catch (Exception ex)
     {

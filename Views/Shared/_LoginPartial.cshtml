@@ -2,7 +2,7 @@
 @inject SignInManager<IdentityUser> SignInManager
 @inject UserManager<IdentityUser> UserManager
 
-@if (SignInManager.IsSignedIn(User))
+@if (SignInManager.IsSignedIn(User) && !User.Identity.Name.Equals("Guest"))
 {
     <ul class="navbar-nav">
         <li class="nav-item">

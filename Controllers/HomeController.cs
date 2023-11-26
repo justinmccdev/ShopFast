@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Identity;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Logging;
 using ShopFast.Data;
@@ -13,22 +14,33 @@ namespace ShopFast.Controllers
     {
         private readonly ILogger<HomeController> _logger;
         private readonly ApplicationDbContext _context;
+        private readonly UserManager<IdentityUser> _userManager;
 
-        public HomeController(ILogger<HomeController> logger, ApplicationDbContext context)
+        public HomeController(UserManager<IdentityUser> userManager, ILogger<HomeController> logger, ApplicationDbContext context)
         {
+            _userManager = userManager;
             _logger = logger;
             _context = context;
         }
 
-        public IActionResult Index(string query)
+
+        public async Task<IActionResult> Index(string query)
         {
+            var user = await _userManager.GetUserAsync(User);
+            if (user != null)
+            {
+                ViewData["Username"] = user.UserName;
+            }
+            else
+            {
+                ViewData["Username"] = "No user is logged in.";
+            }
+
             var products = _context.Products.AsQueryable();
 
             if (!string.IsNullOrEmpty(query))
             {
-                //products = products.Where(p => p.Name.Contains(query));
                 products = products.Where(p => EF.Functions.Like(p.Name, $"%{query}%"));
-
             }
 
             var featuredProducts = products
@@ -45,7 +57,6 @@ namespace ShopFast.Controllers
             ViewBag.Products = featuredProducts;
             return View(viewModel);
         }
-
 
 
         public IActionResult Privacy()

@@ -1,4 +1,5 @@
 ﻿using Microsoft.EntityFrameworkCore;
+using Microsoft.IdentityModel.Tokens;
 using ShopFast.Data;
 using ShopFast.Models;
 using System;
@@ -23,22 +24,48 @@ namespace ShopFast.Services
                 .ThenInclude(ci => ci.Product)
                 .FirstOrDefaultAsync(c => c.UserId == userId && c.Status == "Active");
 
+            // If the user does not have an active cart, create a new one.
             if (cart == null)
             {
                 cart = new ShoppingCart
                 {
                     UserId = userId,
                     Status = "Active",
-                    CartItems = new List<CartItem>() // Add this line to initialize the CartItems property
+                    CartItems = new List<CartItem>()
                 };
-
                 _context.ShoppingCarts.Add(cart);
-                await _context.SaveChangesAsync();
             }
 
+            // Only proceed with transferring items if the current user is not the guest user
+            if (userId != "e392ab50-2933-4cb8-b96f-2a8441b59e1a")
+            {
+                var guestCart = await _context.ShoppingCarts
+                    .Include(c => c.CartItems)
+                    .ThenInclude(ci => ci.Product)
+                    .FirstOrDefaultAsync(c => c.UserId == "e392ab50-2933-4cb8-b96f-2a8441b59e1a" && c.Status == "Active");
+
+ 
+
+                // If there are items in the guest cart, transfer them to the user's cart.
+                if (guestCart?.CartItems != null && guestCart.CartItems.Any())
+                {
+                    foreach (var item in guestCart.CartItems)
+                    {
+                        cart.CartItems.Add(item);
+                    }
+
+                    // Remove the guest cart from the database.
+                    _context.ShoppingCarts.Remove(guestCart);
+                }
+            }
+
+            // Save the changes to the database.
+            await _context.SaveChangesAsync();
 
             return cart;
         }
+
+
 
         public async Task AddToCartAsync(ShoppingCart cart, Product product, int quantity)
         {
